@@ -1,0 +1,18 @@
+# 全部按 LF 存在仓库里。Windows 上的 autocrlf 会把这些文件转成 CRLF 签出，
+# 而 CRLF 的 install.sh 在 Linux 上会直接跑挂（bad interpreter）。
+* text=auto eol=lf
+
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.mjs       text eol=lf
+*.cjs       text eol=lf
+*.js        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.zip binary

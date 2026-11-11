@@ -1,0 +1,35 @@
+{
+  "name": "dsh-plugin-legado-reader",
+  "version": "0.1.0",
+  "description": "DSH plugin: give the agent a legado_deploy tool that installs and starts a self-hosted Legado book-source reader.",
+  "type": "module",
+  "main": "index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "legado",
+    "book-source",
+    "novel-reader"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*"
+  },
+  "dsh": {
+    "bundle": "./cordis.patch.yml"
+  }
+}

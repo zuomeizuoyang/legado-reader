@@ -1,0 +1,16 @@
+{
+  "name": "legado-web",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Legado 书源网页阅读器（后端规则引擎）",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "dependencies": {
+    "iconv-lite": "^0.6.3",
+    "jsdom": "^26.1.0",
+    "linkedom": "^0.18.5"
+  }
+}

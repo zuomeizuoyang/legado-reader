@@ -1,0 +1,80 @@
+name: build-image
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --omit=dev
+      - run: node --check server.mjs
+      - run: node --check src/jsengine.mjs
+
+      - name: 启动并验收（口令必须生效、数据必须落在 DATA_DIR）
+        run: |
+          set -e
+          DATA_DIR="$PWD/.ci-data" ACCESS_KEY=citest PORT=18899 node server.mjs &
+          for i in $(seq 1 30); do
+            curl -sf -o /dev/null http://127.0.0.1:18899/ && break || sleep 1
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18899/api/state)" = "401" \
+            || { echo "未带口令竟然不是 401，ACCESS_KEY 没生效"; exit 1; }
+          test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:18899/api/state?k=citest')" = "200" \
+            || { echo "带正确口令访问失败"; exit 1; }
+          test -f .ci-data/classic.json || { echo "数据没落在 DATA_DIR"; exit 1; }
+          echo "验收通过"
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=sha,prefix=sha-,format=short
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

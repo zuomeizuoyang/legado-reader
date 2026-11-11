@@ -1,0 +1,6 @@
+# Cordis patch：把本插件的工具挂进插件树。
+#
+# 本文件的最小形状。dsh 仍处于 developer preview，若官方
+# docs/cookbook/adding-a-package.md 给出的格式与此不同，以官方为准。
+
+- name: dsh-plugin-legado-reader

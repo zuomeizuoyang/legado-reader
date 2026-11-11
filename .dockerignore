@@ -1,0 +1,23 @@
+# 构建上下文瘦身：宿主的 node_modules 一律不进镜像（跨平台二进制会互相污染）
+node_modules
+dist
+
+# 本机私人数据，绝对不能进镜像
+data/state.json
+data/sources-real.json
+data/*.bak
+data/build-preset.mjs
+
+# 采集/调试脚本，运行期用不到
+probe-*
+test-*
+rank-*
+debug-src.mjs
+*.png
+
+# 文档与版本控制
+.git
+.gitignore
+README.md
+README.selfhost.md
+shots

@@ -1,0 +1,26 @@
+# 依赖
+node_modules/
+
+# 构建/发布产物
+dist/
+release/
+*.zip
+
+# 环境配置（含口令，绝对不能进仓库）
+.env
+
+# 私人数据 —— 这些是本机的书架和采集结果，任何人都不该看到
+data/state.json
+data/sources-real.json
+data/*.bak
+data/build-preset.mjs
+
+# 调试截图与临时产物
+shots/
+*.png
+debug-src.mjs
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+__pycache__/

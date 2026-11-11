@@ -1,0 +1,23 @@
+# 一条命令起服务：docker compose up -d
+#
+# 默认直接拉 ghcr 上的官方镜像（amd64 / arm64 都有，拉取约 57MB）。
+# 想自己构建：把下面 build 那行的注释去掉，并把 image 那行注释掉。
+
+services:
+  legado-reader:
+    image: ghcr.io/zuomeizuoyang/legado-reader:latest
+    # build: .
+    container_name: legado-reader
+    restart: unless-stopped
+    ports:
+      # 左边是宿主机端口，想换就改这个（比如 8080:3000）
+      - "8899:3000"
+    environment:
+      # 可选。不设 = 打开就能用，不会弹口令输入框（适合本机 / 局域网）。
+      # 公网部署务必设上，否则任何能访问到端口的人都能把这台机器当抓取代理。
+      # 设了之后访问要带 ?k=你的口令，例如 http://ip:8899/?k=xxx
+      ACCESS_KEY: ${ACCESS_KEY:-}
+      TZ: Asia/Shanghai
+    volumes:
+      # 书架、阅读进度、书源都在这里。备份这个目录 = 备份全部数据
+      - ./legado-data:/data
